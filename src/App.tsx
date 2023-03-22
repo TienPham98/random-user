@@ -1,26 +1,33 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState, AppDispatch } from "./store/store";
+import { fetchUsers } from "./features/userSlice";
+import UserTable from "./components/UserTable";
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+  const dispatch: AppDispatch = useDispatch();
+  const { users, isLoading, error } = useSelector(
+    (state: RootState) => state.user
   );
+
+  useEffect(() => {
+    dispatch(fetchUsers(1));
+  }, [dispatch]);
+
+  if (isLoading) {
+    return (
+      <div className="ring">
+        Loading
+        <span className="loading"></span>
+      </div>
+    );
+  }
+
+  if (error) {
+    return <div>Error: {error}</div>;
+  }
+
+  return <UserTable users={users} />;
 }
 
 export default App;
